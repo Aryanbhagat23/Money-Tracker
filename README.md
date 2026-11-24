@@ -6,9 +6,13 @@ A simple app for older adults (and the grandchildren who set it up for them).
 When someone calls, texts or emails asking for money, the app helps them
 **pause, spot the warning signs, and check with family before paying**.
 
-| Home | Warning signs | Result + check with family |
+| Welcome | Home | Pause & breathe |
 |---|---|---|
-| ![Home](docs/screenshots/home.png) | ![Checklist](docs/screenshots/checklist.png) | ![Result](docs/screenshots/result.png) |
+| ![Welcome](docs/screenshots/welcome.png) | ![Home](docs/screenshots/home.png) | ![Pause](docs/screenshots/pause.png) |
+
+| Warning signs | Result | Check with family |
+|---|---|---|
+| ![Checklist](docs/screenshots/checklist.png) | ![Result](docs/screenshots/result.png) | ![Family](docs/screenshots/family.png) |
 
 ## What version 1 does
 
@@ -26,6 +30,11 @@ When someone calls, texts or emails asking for money, the app helps them
 - **"I already sent money"**: steps for each payment type (gift card, bank,
   wire, crypto, Zelle/Venmo/Cash App, cash, gave a code) plus links to report
   to the FTC and FBI, and the free AARP Fraud Watch helpline.
+- **Encouraging design**: a greeting, a **protection score** ring that fills
+  as the family finishes setup, a **"You checked N times. Well done!"**
+  badge, a calming **breathing guide**, "You did the right thing" praise on
+  every result, and a daily safety tip. Gentle animations throughout, turned
+  off automatically when the phone's "reduce motion" setting is on.
 - **Built for older eyes**: large text (adjustable up to 200%), big buttons,
   high contrast, screen-reader labels.
 - **Private**: no account, no server, no SMS or call-log permissions.

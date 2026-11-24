@@ -68,6 +68,7 @@ class AppStore extends ChangeNotifier {
   static const _kTextScale = 'text_scale';
   static const _kOnboarded = 'onboarded';
   static const _kSafeWord = 'safe_word';
+  static const _kPauseCount = 'pause_count';
 
   final AppStorage _storage;
 
@@ -76,6 +77,7 @@ class AppStore extends ChangeNotifier {
   String? _safeWord;
   double _textScale = 1.25;
   bool _onboarded = false;
+  int _pauseCount = 0;
 
   List<FamilyContact> get contacts => List.unmodifiable(_contacts);
   String get userName => _userName;
@@ -84,6 +86,19 @@ class AppStore extends ChangeNotifier {
   double get textScale => _textScale;
   bool get onboarded => _onboarded;
 
+  /// How many times the user stopped to check before paying. Shown as
+  /// encouragement on the home screen.
+  int get pauseCount => _pauseCount;
+
+  /// Setup progress from 0 to 1: a family contact, a safe word, a name.
+  double get readiness =>
+      [
+        contacts.isNotEmpty,
+        hasSafeWord,
+        userName.isNotEmpty,
+      ].where((done) => done).length /
+      3;
+
   Future<void> load() async {
     _contacts = FamilyContact.decodeList(await _storage.read(_kContacts));
     _userName = await _storage.read(_kUserName) ?? '';
@@ -91,6 +106,7 @@ class AppStore extends ChangeNotifier {
         double.tryParse(await _storage.read(_kTextScale) ?? '') ?? 1.25;
     _onboarded = (await _storage.read(_kOnboarded)) == 'true';
     _safeWord = await _storage.readSecret(_kSafeWord);
+    _pauseCount = int.tryParse(await _storage.read(_kPauseCount) ?? '') ?? 0;
     notifyListeners();
   }
 
@@ -103,6 +119,12 @@ class AppStore extends ChangeNotifier {
   Future<void> setTextScale(double scale) async {
     _textScale = scale.clamp(1.0, 2.0);
     await _storage.write(_kTextScale, _textScale.toString());
+    notifyListeners();
+  }
+
+  Future<void> recordPause() async {
+    _pauseCount++;
+    await _storage.write(_kPauseCount, _pauseCount.toString());
     notifyListeners();
   }
 

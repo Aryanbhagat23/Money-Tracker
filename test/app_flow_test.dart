@@ -84,7 +84,7 @@ void main() {
     expect(launcher.opened.last.toString(), 'tel:5551234567');
 
     await tapAndSettle(tester, find.text('Back to start'));
-    expect(find.text('Check before you pay.'), findsOneWidget);
+    expect(find.byKey(const ValueKey('btn-asking')), findsOneWidget);
   });
 
   testWidgets('no ticks gives a "still check" result, not "safe"', (
@@ -154,6 +154,53 @@ void main() {
 
     await tapAndSettle(tester, start);
     expect(store.onboarded, isTrue);
-    expect(find.text('Check before you pay.'), findsOneWidget);
+    expect(find.byKey(const ValueKey('btn-asking')), findsOneWidget);
+  });
+
+  testWidgets('checking earns praise and a counter on the home screen', (
+    tester,
+  ) async {
+    final (store, _) = await pumpApp(tester);
+    expect(find.textContaining('You checked'), findsNothing);
+
+    await tapAndSettle(tester, find.byKey(const ValueKey('btn-asking')));
+    await tapAndSettle(tester, find.text('I have paused'));
+    await tapAndSettle(tester, find.text('What does this mean?'));
+    expect(find.text('You did the right thing.'), findsOneWidget);
+    expect(store.pauseCount, 1);
+
+    await tapAndSettle(tester, find.text('Back to start'));
+    expect(find.text('You checked 1 time. Well done!'), findsOneWidget);
+  });
+
+  testWidgets('protection score reflects setup progress', (tester) async {
+    final (store, _) = await pumpApp(tester);
+    // Contact + name set, no safe word yet: 2 of 3.
+    expect(find.text('67%'), findsOneWidget);
+    expect(find.text('Next: choose a family safe word.'), findsOneWidget);
+
+    await store.setSafeWord('pancakes');
+    await tester.pumpAndSettle();
+    expect(find.text('100%'), findsOneWidget);
+    expect(find.text('Fully protected'), findsOneWidget);
+  });
+
+  testWidgets('works with reduced motion and the largest text size', (
+    tester,
+  ) async {
+    tester.platformDispatcher.accessibilityFeaturesTestValue =
+        const FakeAccessibilityFeatures(disableAnimations: true);
+    addTearDown(tester.platformDispatcher.clearAccessibilityFeaturesTestValue);
+    final (store, _) = await pumpApp(tester);
+    await store.setTextScale(2.0);
+    await tester.pumpAndSettle();
+
+    await tapAndSettle(tester, find.byKey(const ValueKey('btn-asking')));
+    expect(find.text('You are calm\nand in control'), findsOneWidget);
+    await tapAndSettle(tester, find.text('I have paused'));
+    await tapAndSettle(tester, find.byKey(const ValueKey('flag-crypto')));
+    await tapAndSettle(tester, find.text('What does this mean?'));
+    expect(find.text('Stop. This looks like a scam.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 }

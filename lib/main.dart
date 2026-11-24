@@ -6,6 +6,7 @@ import 'data/app_store.dart';
 import 'screens/home_screen.dart';
 import 'screens/onboarding_screen.dart';
 import 'services/launcher.dart';
+import 'theme.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,6 +22,8 @@ class KinfirmApp extends StatelessWidget {
   final AppStore store;
   final Launcher launcher;
 
+  static final ThemeData _theme = buildTheme();
+
   @override
   Widget build(BuildContext context) {
     return AppScope(
@@ -31,7 +34,7 @@ class KinfirmApp extends StatelessWidget {
         builder: (context, _) => MaterialApp(
           title: 'Kinfirm',
           debugShowCheckedModeBanner: false,
-          theme: _theme(),
+          theme: _theme,
           builder: (context, child) => MediaQuery(
             data: MediaQuery.of(context)
                 .copyWith(textScaler: TextScaler.linear(store.textScale)),
@@ -40,22 +43,6 @@ class KinfirmApp extends StatelessWidget {
           home: store.onboarded ? const HomeScreen() : const OnboardingScreen(),
         ),
       ),
-    );
-  }
-
-  ThemeData _theme() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: const Color(0xFF1F4E8C),
-      contrastLevel: 1.0,
-    );
-    return ThemeData(
-      colorScheme: scheme,
-      useMaterial3: true,
-      inputDecorationTheme: const InputDecorationTheme(
-        border: OutlineInputBorder(),
-        contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 18),
-      ),
-      cardTheme: const CardThemeData(margin: EdgeInsets.symmetric(vertical: 6)),
     );
   }
 }
